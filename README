@@ -1,0 +1,23 @@
+# Mini Shell
+
+A small shell written in C to learn how Linux processes, commands, signals,
+and memory management work.
+
+## Features
+
+- Runs single-word commands such as `ls`, `pwd`, and `cat`
+- Uses GNU Readline for input and command history
+- Waits for commands to finish before showing the next prompt
+- Handles Ctrl+C for running commands
+- Exits when you type `exit` or press Ctrl+D
+- Ignores empty input
+
+## Requirements
+
+- GCC
+- GNU Readline development library
+
+On Ubuntu, install them with:
+
+```bash
+sudo apt install build-essential libreadline-dev
