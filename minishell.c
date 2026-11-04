@@ -62,6 +62,21 @@ int main(int argc, char *argv[]){
         if(args[0] == NULL){ //make sure to free if there nothing. continue with the minishell prompt
             free(input);
             continue;
+        
+        }
+
+/* NOTE: use of cd is not part of the PATH. to find directories, must use the chdir command
+ * which makes you change the directory you are in. we are associating "cd" to that action
+ * and treat it as a command.
+ */
+        if (strcmp(args[0], "cd") == 0){
+            if (args[1] == NULL){
+                fprintf(stderr, "cd: missing directory\n");
+            } else if (chdir(args[1]) == -1){
+                perror("cd");
+            }
+            free(input);
+            continue;
         }
 /* NOTE: Here is a use of fork where the 
  * parent waits while the child is executing the commands
