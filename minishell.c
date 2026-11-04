@@ -11,7 +11,7 @@ int main(int argc, char *argv[]){
     (void) argc;
     (void) argv;
      char *input;
-     
+    char *args[100]; 
 /* NOTE: while true, this will read the line
  * add nonempty input to history and can be accessed with up arrow,
  * and free the memory as we allocated the memory when we read the line.
@@ -32,6 +32,7 @@ int main(int argc, char *argv[]){
             if (input[0] != '\0'){
                 add_history(input); // history of commands.  press up on the d pad.
             }else{
+                free(input);
                 continue;
         }
        }
@@ -39,6 +40,28 @@ int main(int argc, char *argv[]){
         if (strcmp(input, "exit") == 0){
             free(input);
             break;
+        
+        }
+
+/* NOTE: whole section uses execvp which automatically finds a program and runs with the
+ * arguments you give it. instead of using execlp where we CANNOT predict what the user types
+ * we use execvp for conveinience as a way where we don't have to predict how many words user
+ * will type.
+ */
+        int i = 0;
+        char *word = strtok(input, " \t"); //gets the first word
+
+        while(word != NULL && i < 99) { //saved word where args[i] = word
+            args[i] = word;
+            i++;
+            word = strtok(NULL, " \t"); //get the next word after iteration
+        }
+
+        args[i] = NULL; //all the way until args are NULL so no words left
+
+        if(args[0] == NULL){ //make sure to free if there nothing. continue with the minishell prompt
+            free(input);
+            continue;
         }
 /* NOTE: Here is a use of fork where the 
  * parent waits while the child is executing the commands
@@ -51,8 +74,9 @@ int main(int argc, char *argv[]){
 // in directories listed in PATH. Child becomes ls and list the files.
          if(pid == 0){
              signal(SIGINT, SIG_DFL); //child responds to crtl 
-             execlp(input, input, (char *)NULL); 
-             perror("execlp");
+             execvp(args[0], args);
+             perror("execvp");
+             _exit(EXIT_FAILURE);
              break;
 //this is the parent who waits for the child to finish. parent sleeps
         }else if (pid > 0) {
